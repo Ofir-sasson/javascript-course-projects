@@ -1,74 +1,87 @@
 'use strict';
 
-/*
-//dom manipulation
-console.log(document.querySelector('.message').textContent); // "Start guessing...";
-document.querySelector('.message').textContent = 'Correct Number!'; // Change message to "Correct Number!"
+// Define the secret number
+let secretNumber = Math.trunc(Math.random() * 20) + 1;
 
-document.querySelector('.number').textContent = 13; // Change the number to 13
-document.querySelector('.score').textContent = 10; // Change the score to 20
+// Initialize the score and high score
+let score = 20;
+let highscore = 0;
 
-document.querySelector('.guess').value = 23; // Set the value of the input field to 23
-*/
+// Function to display messages in the UI
+const displayMessage = function (type, value) {
+  const messageElement = document.querySelector('.message');
+  const scoreElement = document.querySelector('.score');
+  const numberElement = document.querySelector('.number');
+  const bodyElement = document.querySelector('body');
 
-//define the secret number
-let secretNumber = Math.trunc(Math.random() * 20) + 1; // Generate a random number between 1 and 20
-//math.trunc() is used to round down the number to the nearest integer
-
-// Initialize the score
-//state variable to keep track of the score - this will be updated as the user guesses
-let score = 20; // Set the initial score to 20
-let highscore = 0; // Initialize a variable to keep track of the high score
-
-const displayMessage = function (message) {
-  document.querySelector('.message').textContent = message; // Function to display messages in the UI
+  switch (type) {
+    case 'message':
+      messageElement.textContent = value; // Update the message displayed to the user
+      break;
+    case 'score':
+      scoreElement.textContent = value; // Update the score displayed to the user
+      break;
+    case 'number':
+      numberElement.textContent = value; // Update the displayed number
+      break;
+    case 'background':
+      bodyElement.style.backgroundColor = value; // Change the background color of the body
+      break;
+    case 'width':
+      numberElement.style.width = value; // Change the width of the number display
+      break;
+    default:
+      console.error('Invalid message type');
+  }
 };
 
 // Event listener for the "Check" button
 document.querySelector('.check').addEventListener('click', function () {
-  const guess = Number(document.querySelector('.guess').value); // Convert the input value to a number
-  console.log(guess); // Log the guessed number to the console
+  const guess = Number(document.querySelector('.guess').value);
 
   if (!guess) {
-    displayMessage('⛔ No number!'); // Show message if no number is entered
+    // If no number is entered, display an error message
+    displayMessage('message', '⛔ No number!');
   } else if (guess === secretNumber) {
-    displayMessage('🎉 Correct Number!'); // Show message for correct guess
-
-    //does not change the css file, but changes the style of the element in the DOM
-    document.querySelector('body').style.backgroundColor = '#60b347'; // Change background color to green for correct guess
-
-    document.querySelector('.number').textContent = secretNumber; // Display the secret number in the UI (for testing purposes)
-    document.querySelector('.number').style.width = '30rem'; // Change the width
-    // of the number display
+    // If the guessed number is correct
+    displayMessage('message', '🎉 Correct Number!');
+    displayMessage('background', '#60b347');
+    displayMessage('number', secretNumber);
+    displayMessage('width', '30rem');
 
     if (score > highscore) {
-      highscore = score; // Update the high score if the current score is greater
-      document.querySelector('.highscore').textContent = highscore; // Display the new high score in the UI
+      // If the current score is higher than the high score, update the high score
+      highscore = score;
+      document.querySelector('.highscore').textContent = highscore;
     }
-
-    //when the user guesses the wrong number
   } else if (guess !== secretNumber) {
+    // If the guessed number is incorrect
     if (score > 1) {
-      // Check if the score is greater than 0 before updating the message and score - greater than 1 to allow for at least one more guess
-      // This prevents the score from going below 0
-      displayMessage(guess > secretNumber ? '📈 Too high!' : '📉 Too low!'); // Show message if guess is too high
+      // If there are still attempts left
+      displayMessage(
+        'message',
+        guess > secretNumber ? '📈 Too high!' : '📉 Too low!'
+      );
       score--;
-      document.querySelector('.score').textContent = score; // Update the score in the UI
+      displayMessage('score', score);
     } else {
-      displayMessage('💥 You lost the game!'); // Show message if the score is 0
-      document.querySelector('.score').textContent = 0; // Ensure the score is displayed as 0 in the UI
+      // If no attempts are left
+      displayMessage('message', '💥 You lost the game!');
+      displayMessage('score', 0);
     }
   }
 });
+
 // Event listener for the "Again" button
 document.querySelector('.again').addEventListener('click', function () {
+  // Reset the game state
   score = 20;
-  secretNumber = Math.trunc(Math.random() * 20) + 1; // Generate a new secret number
+  secretNumber = Math.trunc(Math.random() * 20) + 1;
 
-  displayMessage('Start guessing...'); // Reset the message
-  document.querySelector('.score').textContent = score; // Reset the score display
-  document.querySelector('.number').textContent = '?'; // Reset the displayed number
-  document.querySelector('.guess').value = ''; // Clear the input field
-  document.querySelector('body').style.backgroundColor = '#222'; // Reset background color
-  document.querySelector('.number').style.width = '15rem'; // Reset the width of the number display
+  displayMessage('message', 'Start guessing...');
+  displayMessage('score', score);
+  displayMessage('number', '?');
+  document.querySelector('.guess').value = '';
+  displayMessage('background', '#222');
+  displayMessage('width', '15rem');
 });
