@@ -20,15 +20,19 @@ let secretNumber = Math.trunc(Math.random() * 20) + 1; // Generate a random numb
 let score = 20; // Set the initial score to 20
 let highscore = 0; // Initialize a variable to keep track of the high score
 
+const displayMessage = function (message) {
+  document.querySelector('.message').textContent = message; // Function to display messages in the UI
+};
+
 // Event listener for the "Check" button
 document.querySelector('.check').addEventListener('click', function () {
   const guess = Number(document.querySelector('.guess').value); // Convert the input value to a number
   console.log(guess); // Log the guessed number to the console
 
   if (!guess) {
-    document.querySelector('.message').textContent = '⛔ No number!'; // Show message if no number is entered
+    displayMessage('⛔ No number!'); // Show message if no number is entered
   } else if (guess === secretNumber) {
-    document.querySelector('.message').textContent = '🎉 Correct Number!'; // Show message for correct guess
+    displayMessage('🎉 Correct Number!'); // Show message for correct guess
 
     //does not change the css file, but changes the style of the element in the DOM
     document.querySelector('body').style.backgroundColor = '#60b347'; // Change background color to green for correct guess
@@ -41,25 +45,17 @@ document.querySelector('.check').addEventListener('click', function () {
       highscore = score; // Update the high score if the current score is greater
       document.querySelector('.highscore').textContent = highscore; // Display the new high score in the UI
     }
-  } else if (guess > secretNumber) {
+
+    //when the user guesses the wrong number
+  } else if (guess !== secretNumber) {
     if (score > 1) {
       // Check if the score is greater than 0 before updating the message and score - greater than 1 to allow for at least one more guess
       // This prevents the score from going below 0
-      document.querySelector('.message').textContent = '📈 Too high!'; // Show message if guess is too high
+      displayMessage(guess > secretNumber ? '📈 Too high!' : '📉 Too low!'); // Show message if guess is too high
       score--;
       document.querySelector('.score').textContent = score; // Update the score in the UI
     } else {
-      document.querySelector('.message').textContent = '💥 You lost the game!'; // Show message if the score is 0
-      document.querySelector('.score').textContent = 0; // Ensure the score is displayed as 0 in the UI
-    }
-  } else if (guess < secretNumber) {
-    if (score > 1) {
-      // Check if the score is greater than 0 before updating the message and score
-      document.querySelector('.message').textContent = '📉 Too low!'; // Show message if guess is too low
-      score--;
-      document.querySelector('.score').textContent = score; // Update the score in the UI
-    } else {
-      document.querySelector('.message').textContent = '💥 You lost the game!'; // Show message if the score is 0
+      displayMessage('💥 You lost the game!'); // Show message if the score is 0
       document.querySelector('.score').textContent = 0; // Ensure the score is displayed as 0 in the UI
     }
   }
@@ -69,7 +65,7 @@ document.querySelector('.again').addEventListener('click', function () {
   score = 20;
   secretNumber = Math.trunc(Math.random() * 20) + 1; // Generate a new secret number
 
-  document.querySelector('.message').textContent = 'Start guessing...'; // Reset the message
+  displayMessage('Start guessing...'); // Reset the message
   document.querySelector('.score').textContent = score; // Reset the score display
   document.querySelector('.number').textContent = '?'; // Reset the displayed number
   document.querySelector('.guess').value = ''; // Clear the input field
